@@ -32,7 +32,6 @@
 # ============================================================================ #
 
 # import required libraries
-from itertools import repeat
 import numpy as np
 from scipy.spatial import distance
 from scipy.stats import norm
@@ -71,12 +70,12 @@ def MCarlo_mean_dist(trials, sample_size, x_size, y_size):
     distances (k=1), and a plot with their distribution.
     """
 
-    nn_distances = np.array([])
+    nn_distances = np.zeros(trials)
 
-    for i in repeat(None, trials):  # Optimized version of a 'for loop' using itertools.repeat
+    for i in range(trials):
         datapoints = generate_rand_coordinates(sample_size, x_size, y_size)
         distances = nearest_neighbor_dist(datapoints)
-        nn_distances = np.append(nn_distances, np.mean(distances))
+        nn_distances[i] = np.mean(distances)
 
     mu = round(np.mean(nn_distances), 2)
     sigma = round(np.std(nn_distances), 2)
@@ -143,7 +142,6 @@ def nearest_neighbor_dist(coordinates):
     -------
     A Numpy array with the first nearest neighbour euclidean distances
     """
-    nearest_dist = []
 
     # estimate euclidean distances between points using distance.pdist (from Scipy.spatial library)
     dist = distance.pdist(coordinates, metric='euclidean')
@@ -157,8 +155,10 @@ def nearest_neighbor_dist(coordinates):
     # estimate the size (number of rows and columns) of the matrix
     n, m = dist_mat.shape
 
+    nearest_dist = np.zeros(n)
+
     for i in range(n):
-        nearest_dist.append(np.nanmin(dist_mat[i]))
+        nearest_dist[i] = np.nanmin(dist_mat[i])
 
     return nearest_dist
 
